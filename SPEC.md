@@ -6,71 +6,69 @@ Implementation of a classic Pacman game using HTML, CSS, and JavaScript to run i
 ## Goals
 - Create a fully functional Pacman game with playable character and ghosts
 - Implement score tracking and lives system
-- Add level progression and win/lose conditions
-- Ensure responsive controls using keyboard input
-- Design a visually appealing game interface with grid-based layout
+- Enable keyboard controls for player movement
+- Design a responsive game board layout with maze structure
+- Add game state management including win/lose conditions
 
 ## Non-Goals
 - Adding multiplayer functionality
-- Implementing advanced AI behaviors for ghosts beyond basic pathfinding
+- Implementing advanced graphics or animations beyond basic canvas rendering
 - Including sound effects or music
-- Creating a persistent leaderboard or save state
-- Adding power pellets or special items beyond dots
+- Creating a persistent leaderboard or user accounts
 
 ## Components
 
 ### Game Engine
-**Responsibility:** Manages game state, updates game objects, handles collisions, and runs the main game loop
+**Responsibility:** Manages game loop, state updates, collision detection, and game logic
 
 **Affected Files:**
 - `src/main/webapp/js/game-engine.js`
 
 **Behavior Expectations:**
 - Initialize game board with walls, dots, and power pellets
-- Update positions of Pacman and ghosts every frame
-- Detect collisions between characters and game elements
-- Handle game events like eating dots, losing lives, and winning levels
-- Return game state object containing score, lives, and current level
+- Update game state on each frame tick
+- Detect collisions between player and ghosts
+- Handle dot collection and score calculation
+- Manage game over and win conditions
 
 **Integration Points:**
-- UI Component for rendering game elements
-- Input Handler for processing keyboard events
-- Level Manager for loading different game boards
+- UI Component for rendering
+- Input Handler for keyboard events
 
 ### Player Controller
-**Responsibility:** Handles player input and movement logic for Pacman character
+**Responsibility:** Handles player movement based on keyboard input
 
 **Affected Files:**
 - `src/main/webapp/js/player-controller.js`
 
 **Behavior Expectations:**
-- Listen for arrow key presses to change Pacman's direction
-- Validate movement against walls before updating position
-- Prevent movement in opposite directions (e.g., left after right)
-- Return updated player position and direction on each move
+- Listen for arrow key presses to move player
+- Prevent movement through walls
+- Update player position on valid moves
+- Change direction immediately upon key press
 
 **Integration Points:**
-- Game Engine for receiving movement commands
-- Input Handler for capturing keyboard events
+- Game Engine for position updates
+- Input Handler for event listening
 
 ### Ghost AI
-**Responsibility:** Controls ghost behavior including movement and basic pathfinding
+**Responsibility:** Controls ghost behavior including movement and chase patterns
 
 **Affected Files:**
 - `src/main/webapp/js/ghost-ai.js`
 
 **Behavior Expectations:**
-- Move ghosts at regular intervals based on predefined patterns
-- Change direction when hitting walls or corners
-- Avoid moving directly opposite to their previous direction
-- Return ghost positions and directions for rendering
+- Move ghosts within maze boundaries
+- Implement basic chase behavior towards player
+- Switch between scatter and chase modes
+- Handle ghost collision with player
 
 **Integration Points:**
-- Game Engine for position updates and collision detection
-- Level Manager for understanding board layout
+- Game Engine for position updates
+- Player Controller for target positioning
 
 ### User Interface
-**Responsibility:** Renders the game board, score display, and game status information
+**Responsibility:** Renders game elements and displays game information
 
 **Affected Files:**
 - `src/main/webapp/index.html`
@@ -78,15 +76,15 @@ Implementation of a classic Pacman game using HTML, CSS, and JavaScript to run i
 - `src/main/webapp/js/ui-renderer.js`
 
 **Behavior Expectations:**
-- Display game board with walls, dots, and power pellets
-- Render Pacman and ghost sprites at correct positions
-- Show current score, remaining lives, and level number
-- Display game over or win messages when appropriate
-- Update UI elements in real-time as game state changes
+- Render game board with walls, dots, and power pellets
+- Display player, ghost, and collectible sprites
+- Show current score and remaining lives
+- Display game over and win screens
 
 **Integration Points:**
-- Game Engine for retrieving game state data
-- Input Handler for capturing user interactions
+- Game Engine for game state data
+- Player Controller for player position
+- Ghost AI for ghost positions
 
 ### Input Handler
 **Responsibility:** Captures and processes keyboard input for game controls
@@ -95,71 +93,45 @@ Implementation of a classic Pacman game using HTML, CSS, and JavaScript to run i
 - `src/main/webapp/js/input-handler.js`
 
 **Behavior Expectations:**
-- Listen for arrow key events and translate them to directional commands
-- Prevent default browser behavior for arrow keys
-- Return direction commands to Player Controller
-- Support continuous key press detection for smooth movement
+- Capture arrow key presses for movement
+- Map keys to corresponding actions
+- Debounce rapid key presses
+- Provide input state to controllers
 
 **Integration Points:**
-- Player Controller for sending movement instructions
-- UI Component for displaying control instructions
-
-### Level Manager
-**Responsibility:** Loads and manages different game levels and board configurations
-
-**Affected Files:**
-- `src/main/webapp/js/level-manager.js`
-
-**Behavior Expectations:**
-- Load predefined game board layouts from configuration files
-- Initialize game elements (walls, dots, power pellets) according to layout
-- Provide methods for checking if a cell is walkable or contains an item
-- Return level-specific data to Game Engine for initialization
-
-**Integration Points:**
-- Game Engine for board setup
-- Ghost AI for understanding board boundaries
-- Player Controller for validating movement
+- Player Controller for movement commands
+- Game Engine for game control signals
 
 ## Technical Requirements
-- Use vanilla JavaScript without external libraries
-- Implement game loop using requestAnimationFrame API
-- Structure code with modular components using ES6 modules
-- Follow semantic HTML structure in index.html
-- Apply CSS Grid or Flexbox for responsive layout design
-- Use consistent naming conventions for variables and functions
-- Implement proper error handling for invalid game states
-- Ensure cross-browser compatibility for modern browsers
+- Use HTML5 Canvas for rendering game elements
+- Implement ES6 JavaScript modules for code organization
+- Follow object-oriented programming principles for game entities
+- Ensure cross-browser compatibility with modern browsers
+- Use CSS Grid or Flexbox for UI layout
+- Implement requestAnimationFrame for smooth animation
 
 ## Edge Cases
-- Player attempts to move through walls or obstacles
-- Player collides with ghost while invincible
-- All dots consumed but player hasn't reached exit point
+- Player attempting to move through solid walls
+- Collision between player and ghost during frightened mode
+- Player collecting all dots and winning the game
+- Player losing all lives and game over condition
 - Invalid keyboard input or key combinations
-- Game board has no valid path for ghosts to navigate
-- Multiple simultaneous key presses causing conflicting movements
-- Player moves too quickly causing visual glitches in animation
-- Game state becomes inconsistent due to race conditions in update loops
+- Maze boundary overflow during ghost movement
 
 ## Out-of-Scope Assumptions
-- Browser environment supports modern JavaScript features (ES6+)
-- DOM elements exist with expected IDs and classes in HTML
-- CSS stylesheets are properly linked and loaded
-- Game assets (images/sprites) are available in specified locations
-- Keyboard event listeners are supported by the browser
-- Canvas or DOM rendering capabilities are available
-- No existing game engine or framework is present in the codebase
-- No pre-existing game state management system exists
+- Web server hosting capabilities are already implemented
+- CSS framework or library for styling is pre-configured
+- Browser environment supports HTML5 Canvas API
+- Basic DOM manipulation utilities are available
+- No external dependencies beyond standard web technologies
 
 ## Acceptance Criteria
-- Game loads successfully in a web browser without errors
-- Player can move Pacman using arrow keys without passing through walls
-- Ghosts move autonomously with basic pathfinding behavior
-- Dots disappear when collected and score increases accordingly
-- Game ends when all lives are lost or all dots are eaten
-- Score and lives display correctly during gameplay
-- Game board renders properly with walls, dots, and power pellets
-- Player cannot move in opposite direction immediately after changing direction
-- Game provides clear win/lose messages upon completion
-- Code follows established naming conventions and is well-documented
+- Game loads successfully in a web browser
+- Player can navigate maze using arrow keys
+- Ghosts move according to basic AI behavior
+- Score increases when dots are collected
+- Game ends when all lives are lost or all dots collected
+- Visual representation matches classic Pacman design
+- All game elements render correctly on screen
+- Keyboard controls respond accurately to user input
 
